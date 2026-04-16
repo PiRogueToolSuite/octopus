@@ -11,3 +11,6 @@ override_dh_builddeb:
 override_dh_clean:
 	dh_clean
 	rm -rf octopus.egg-info/
+
+override_dh_auto_test:
+	@echo "Running tests would require setting up many PiRogue packages."
