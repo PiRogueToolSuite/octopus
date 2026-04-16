@@ -1,0 +1,67 @@
+[
+    {
+        "methods": [
+            "Landroid/telephony/CellIdentity/getOperatorAlphaShort",
+            "Landroid/telephony/CellIdentity/getOperatorAlphaLong",
+        ],
+        "name": "getOperator",
+        "description": "Récupère le nom du fournisseur d'accès de l'utilisateur",
+        "taxonomy_id": "C00086",
+    },
+    {
+        "methods": [
+            "Landroid/telephony/TelephonyManager/getDeviceId",
+            "Landroid/telephony/TelephonyManager/getImei",
+            "Landroid/telephony/TelephonyManager/getMeid",
+            "Landroid/telephony/TelephonyManager/getPrimaryImei",
+        ],
+        "name": "getDeviceUniqueID",
+        "description": "Récupère l'identifiant du téléphone (IMEI/MEID)",
+        "taxonomy_id": "C00052",
+    },
+    {
+        "methods": ["Landroid/telephony/TelephonyManager/getDeviceSoftwareVersion"],
+        "name": "getSoftwareVersion",
+        "description": "Récupère la version logicielle du téléphone",
+        "taxonomy_id": "C00087",
+    },
+    {
+        "methods": [
+            "Landroid/telephony/TelephonyManager/getCarrierIdFromSimMccMnc",
+            "Landroid/telephony/TelephonyManager/getNetworkOperator",
+            "Landroid/telephony/TelephonyManager/getSimCarrierId",
+            "Landroid/telephony/TelephonyManager/getSimOperator",
+            "Landroid/telephony/TelephonyManager/getSimOperatorName",
+        ],
+        "name": "getCarrierId",
+        "description": "Récupère le MCCMNC",
+        "taxonomy_id": "C00088",
+    },
+    {
+        "methods": [
+            "Landroid/telephony/TelephonyManager/getLine1Number",
+            "Landroid/telephony/SubscriptionManager/getPhoneNumber",
+        ],
+        "name": "getPhoneNumber",
+        "description": "Récupère le numéro de téléphone de l'utilisateur",
+        "taxonomy_id": "C00024",
+    },
+    {
+        "methods": ["Landroid/telephony/TelephonyManager/getManufacturerCode"],
+        "name": "getManufacturerCode",
+        "description": "Récupère le code associé au constructeur du téléphone",
+        "taxonomy_id": "C00089",
+    },
+    {
+        "methods": ["Landroid/telephony/TelephonyManager/getSimSerialNumber"],
+        "name": "getSIMIdentifier",
+        "description": "Récupère le numéro de série de la SIM",
+        "taxonomy_id": "C00090",
+    },
+    {
+        "methods": ["Landroid/telephony/TelephonyManager/getSubscriberId"],
+        "name": "getIMSI",
+        "description": "Récupère l'IMSI de l'utilisateur'",
+        "taxonomy_id": "C00091",
+    },
+]

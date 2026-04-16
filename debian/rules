@@ -1,0 +1,14 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME=mongoose
+
+%:
+	dh $@ --with quilt,python3.11 --buildsystem=pybuild
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
+
+override_dh_clean:
+	dh_clean
+	rm -f ./*mongoose.db
+	rm -rf mongoose.egg-info/

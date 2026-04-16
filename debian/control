@@ -1,0 +1,26 @@
+Source: pirogue-octopus
+Section: misc
+Priority: optional
+Maintainer: U+039b <hello@pts-project.org>
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-python,
+ python3-pytest,
+ python3-all,
+ python3-hatchling,
+ python3-setuptools,
+ quilt,
+Standards-Version: 4.5.1
+Homepage: https://github.com/PiRogueToolSuite/octopus
+Rules-Requires-Root: no
+
+Package: pirogue-octopus
+Architecture: all
+Depends:
+ frida,
+ python3-requests,
+ python3-usb1,
+ python3-ppad,
+ ${python3:Depends},
+ ${misc:Depends},
+Description: Dynamic analysis framework for Android apps.

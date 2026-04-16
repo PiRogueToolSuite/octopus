@@ -1,0 +1,38 @@
+[
+    {
+        "methods": ["Landroid/content/pm/PackageInfo/toString"],
+        "name": "packageToString",
+        "description": "String representation of package object",
+        "taxonomy_id": "C00093",
+    },
+    {
+        "methods": ["Landroid/content/pm/PackageInfo/getLongVersionCode"],
+        "name": "getLongVersionCode",
+        "description": "Long representation of package version",
+        "taxonomy_id": "C00093",
+    },
+    {
+        "methods": ["Landroid/content/pm/ApplicationInfo/loadDescription"],
+        "name": "applicationLoadDescription",
+        "description": "Retrieve the textual description of the application",
+        "taxonomy_id": "C00093",
+    },
+    {
+        "methods": ["Landroid/content/pm/ApplicationInfo/toString"],
+        "name": "applicationToString",
+        "description": "Retrieve the textual description of the application",
+        "taxonomy_id": "C00093",
+    },
+    {
+        "methods": ["Landroid/content/pm/PackageManager/getInstalledApplications"],
+        "name": "getInstalledApplications",
+        "description": "Returns applications installed on the device",
+        "taxonomy_id": "C00093",
+    },
+    {
+        "methods": ["Landroid/content/pm/PackageManager/getInstalledPackages"],
+        "name": "getInstalledPackages",
+        "description": "Returns packages installed on the device",
+        "taxonomy_id": "C00093",
+    },
+]

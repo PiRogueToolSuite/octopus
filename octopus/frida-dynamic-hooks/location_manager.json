@@ -1,0 +1,8 @@
+[
+    {
+        "methods": ["Landroid/location/Location/getLongitude", "Landroid/location/Location/getLatitude"],
+        "name": "get location",
+        "description": "Récupère la localisation de l'utilisateur",
+        "taxonomy_id": "",
+    }
+]

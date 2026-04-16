@@ -1,0 +1,21 @@
+{
+    "scripts": {
+        "build": "./.venv/bin/frida-compile -S -c frida-scripts-src/agent.ts -o octopus/frida-scripts/agent.js",
+        "watch": "./.venv/bin/frida-compile frida-scripts-src/agent.ts -o octopus/frida-scripts/agent.js -w -c"
+    },
+    "devDependencies": {
+        "@types/frida-gum": "^19.0.1",
+        "@types/node": "^18",
+        "@types/source-map-support": "^0.5.6",
+        "source-map": "^0.7.4",
+        "typescript": "^5.8.2"
+    },
+    "dependencies": {
+        "frida": "^17.2.0",
+        "frida-fs": "^5.2.1",
+        "frida-java-bridge": "^7.0.7",
+        "frida-objc-bridge": "^8.0.5",
+        "JSON": "^1.0.0",
+        "util": "^0.12.5"
+    }
+}

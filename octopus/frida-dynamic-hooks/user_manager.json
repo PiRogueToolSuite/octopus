@@ -1,0 +1,20 @@
+[
+    {
+        "methods": ["Landroid.os.UserManager/getSerialNumberForUser"],
+        "name": "getSerialNumberForUser",
+        "description": "Gets the user unique serial number",
+        "taxonomy_id": "C00056",
+    },
+    {
+        "methods": ["Landroid.os.UserManager/getUserCreationTime"],
+        "name": "getUserCreationTime",
+        "description": "Returns creation time of the user.",
+        "taxonomy_id": "C00092",
+    },
+    {
+        "methods": ["Landroid.os.UserManager/getUserName"],
+        "name": "getUserName",
+        "description": "Returns user name",
+        "taxonomy_id": "C00003",
+    },
+]

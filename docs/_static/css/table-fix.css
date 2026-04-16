@@ -1,0 +1,21 @@
+/*
+ * SPDX-FileCopyrightText: 2026 Defensive Lab Agency
+ * SPDX-FileContributor: u039b <git@0x39b.fr>
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
+ /* override table width restrictions */
+ .wy-table-responsive table td, .wy-table-responsive table th {
+     white-space: normal;
+ }
+
+ .wy-table-responsive {
+     margin-bottom: 24px;
+     max-width: 100%;
+     overflow: visible;
+ }
+
+ .wy-table-responsive th p {
+     margin-bottom: unset;
+ }

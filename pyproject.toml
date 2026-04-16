@@ -1,0 +1,124 @@
+# SPDX-FileCopyrightText: 2026 Defensive Lab Agency
+# SPDX-FileContributor: u039b <git@0x39b.fr>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+[build-system]
+build-backend = "hatchling.build"
+
+requires = [ "hatchling", "uv-dynamic-versioning" ]
+
+[project]
+name = "octopus"
+description = "Dynamic analysis framework for Android apps."
+readme = "README.md"
+license = "GPL-3.0-or-later"
+maintainers = [
+  { name = "U+039b", email = "hello@pts-project.org" },
+]
+requires-python = ">=3.11"
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dynamic = [
+  "version",
+  "authors",
+]
+dependencies = [
+  "frida==17.2.2",
+  "frida-tools==14.3",
+  "libusb1==2.0.1",
+  "pure-python-adb>=0.3.0.dev0",
+  "requests==2.28.1",
+]
+
+[dependency-groups]
+dev = [
+  "hatchling",
+  "mypy",
+  "pre-commit-uv",
+  "pytest",
+  "reuse",
+  "ruff",
+  "tox",
+  "tox-uv",
+]
+test = [
+  "coverage",
+  "hatchling",
+  "mypy",
+  "pytest",
+  "pytest-cov",
+  "pytest-md-report",
+  "sphinx",
+]
+
+docs = [
+  "autoclasstoc",
+  "docutils-stubs",
+  "myst-parser",
+  "sphinx",
+  "sphinx-autobuild",
+  "sphinx-copybutton",
+  "sphinx-hoverxref",
+  "sphinx-jsonschema",
+  "sphinx-needs",
+  "sphinx-notfound-page",
+  "sphinx-rtd-theme",
+  "sphinxcontrib-datatemplates",
+  "types-docutils",
+]
+
+[tool.hatch]
+build.targets.sdist.ignore-vcs = true
+build.targets.wheel.packages = [ "octopus" ]
+build.targets.sdist.only-include = [
+  "octopus",
+  "LICENSE",
+  "README.md",
+]
+
+# Use hatch_build.py to get the version and authors metadata
+[tool.hatch.metadata.hooks.custom]
+
+[tool.uv]
+concurrent-builds = 4
+trusted-publishing = "always"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+indent-width = 4
+exclude = [
+  ".eggs",
+  ".git",
+  ".idea",
+  ".ruff_cache",
+  ".tox",
+  ".venv",
+  ".vscode",
+  "__pypackages__",
+  "_build",
+  "build",
+  "dist",
+  "site-packages",
+]
+format.indent-style = "space"
+format.quote-style = "double"
+format.line-ending = "auto"
+format.skip-magic-trailing-comma = false
+format.docstring-code-line-length = "dynamic"
+format.docstring-code-format = false
+lint.select = [ "E4", "E7", "E9", "F" ]
+lint.ignore = [ "E722", "F401", "F403", "F405", "F841" ]
+lint.fixable = [ "ALL" ]
+lint.unfixable = []
+lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.bandit]
+targets = [ "octopus" ]
+exclude_dirs = [ "tests", "doc" ]
+skips = [ "B101" ]

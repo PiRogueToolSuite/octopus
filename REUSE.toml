@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 Defensive Lab Agency
+# SPDX-FileContributor: u039b <git@0x39b.fr>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+version = 1
+
+[[annotations]]
+path = ["octopus/**/*.json", "octopus/frida-scripts/agent.js"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Defensive Lab Agency"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["docs/**/*.rst", "docs/**/*.png"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Defensive Lab Agency"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["octopus/assets/tcpdump_binaries/*"]
+precedence = "override"
+SPDX-FileCopyrightText = "The Tcpdump Group"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = "debian/**/*"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Defensive Lab Agency"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ".github/**/*"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Defensive Lab Agency"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+[[annotations]]
+path = ["uv.lock", "package.json", "package-lock.json", "tsconfig.json"]
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Defensive Lab Agency"
+SPDX-License-Identifier = "GPL-3.0-or-later"
