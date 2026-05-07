@@ -1,0 +1,87 @@
+name: Build Python distribution
+
+on:
+  push:
+    branches:
+      - main
+      - "v*.*.*"
+      - "test-me-*"
+    tags:
+      - "v*.*.*"
+
+  pull_request:
+    branches:
+      - main
+      - "v*.*.*"
+    types:
+      - opened  # default
+      - synchronize  # default
+      - reopened  # default
+      - ready_for_review  # used in PRs created from the release workflow
+
+env:
+  PYTEST_ADDOPTS: "--color=yes"
+
+# Cancel running jobs for the same workflow and branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  doc:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.7.16"
+          python-version: "3.13"
+      - name: Install the project
+        run: uv sync --all-extras --dev
+      - name: Install tox
+        run: uv tool install --python-preference only-managed --python 3.13 tox --with tox-uv
+      - name: Generate documentation
+        shell: bash
+        run: |
+          tox run -e docs
+      - name: Upload documentation
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./docs/_build/html
+      - name: Publish documentation on GitHub Pages
+        uses: actions/deploy-pages@v5
+        id: deployment
+
+  release:
+    name: Publish Python 🐍 distribution 📦 to PyPI
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+    needs:
+      - doc
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pirogue-mongoose
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.7.16"
+          python-version: "3.13"
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+      - name: Install the project
+        run: uv sync --all-extras --dev
+      - name: Build
+        run: uv build
+      - name: Publish
+        run: uv publish
