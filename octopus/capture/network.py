@@ -71,15 +71,15 @@ class OnDeviceNetworkCapture(AbstractCapture):
             Exception: If the ADB shell command fails to launch, the capture
                 is stopped and the error is logged.
         """
-        logger.info("Starting on device network capture...")
         self.device.start_frida_server(force_stop=False)
         self.device.install_tcpdump()
+        logger.info("Starting on device network capture...")
         self.start_capture_time = time.time() * 1000
-        tcpdump_filter = "not \\(tcp port 5555 or tcp port 27042\\)"
+        tcpdump_filter = "not (tcp port 5555 or tcp port 27042)"
         capture_cmd = f"{self.device.tcpdump_path} -U -i any -s 0 -w {self.on_device_output_path} '{tcpdump_filter}'"
         logger.debug(capture_cmd)
         try:
-            self.device.adb_shell_no_wait(capture_cmd)
+            self.device.adb_shell_nohup(capture_cmd)
         except Exception as e:
             self.stop_capture()
             logger.error(e)
@@ -103,7 +103,7 @@ class OnDeviceNetworkCapture(AbstractCapture):
             self.device.adb_shell(f"pkill -f -l 9 {self.device.tcpdump_path}")
         except Exception as e:
             logger.error(e)
-        time.sleep(2)
+        time.sleep(4)
         try:
             logger.info("Retrieving the PCAP file from the device...")
             self.device.adb_shell(f"chmod 604 {self.on_device_output_path}")

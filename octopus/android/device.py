@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
+import time
 from functools import cached_property
 from importlib import resources
 from pathlib import Path
@@ -53,10 +54,10 @@ class AndroidDevice:
         self.requires_su = False
         self.rooted = False
         self.tcpdump_binaries_dir = resources.files("octopus") / "assets" / "tcpdump_binaries"
+        self.tcpdump_path = self.device_tmp_dir / "tcpdump"
         self.root()
         self.is_rooted()
-        self._check_frida_server_installed()
-        self.tcpdump_path = self.device_tmp_dir / "tcpdump"
+        self.check_frida_server_installed()
 
     def root(self):
         """
@@ -183,7 +184,7 @@ class AndroidDevice:
             command = f'su -c "{command}"'
         return self.adb_device.shell(command, timeout=30)
 
-    def adb_shell_no_wait(self, command):
+    def adb_shell_nohup(self, command):
         """
         Executes a shell command on the device without waiting for output.
 
@@ -197,10 +198,18 @@ class AndroidDevice:
         def dummy_handler(_):
             pass
 
+        # The 'nohup' command ignores the hangup signal.
+        # Output is redirected to /dev/null to avoid leaving nohup.out files.
         if self.requires_su:
-            command = f'su -c "{command}"'
-        cmd = f"{command} &"
-        self.adb_device.shell(cmd, handler=dummy_handler)
+            shell_command = f'su -c "nohup {command} > /dev/null 2>&1"'
+        else:
+            shell_command = f"nohup {command} > /dev/null 2>&1"
+
+        try:
+            self.adb_device.shell(shell_command, handler=dummy_handler)
+            logger.info("Process started successfully")
+        except Exception as e:
+            logger.error(f"An error occurred while starting the process: {e}")
 
     def adb_push(self, local_path, device_path):
         """
@@ -253,7 +262,7 @@ class AndroidDevice:
         value = self.adb_shell(f"getprop {key}") or ""
         return value
 
-    def _check_frida_server_running(self) -> bool:
+    def check_frida_server_running(self) -> bool:
         """
         Checks if the Frida server process is running on the device.
 
@@ -266,7 +275,7 @@ class AndroidDevice:
         value = value.strip()
         return bool(value)
 
-    def _check_frida_server_installed(self) -> bool:
+    def check_frida_server_installed(self) -> bool:
         """
         Checks if the Frida server binary is installed on the device.
 
@@ -287,7 +296,12 @@ class AndroidDevice:
 
         Executes the Frida server binary with the :textmono:`--version` flag.
         """
-        return self.adb_shell(f"{FridaServer.executable_path} --version").strip() or "0.0.0"
+        output = self.adb_shell(f"{FridaServer.executable_path} --version").strip()
+        if not output or "inaccessible or not found" in output:
+            version = "unknown"
+        else:
+            version = output
+        return version
 
     def get_frida_device(self) -> Device:
         raise NotImplementedError()
@@ -302,9 +316,13 @@ class AndroidDevice:
         If the server is already running, just logs an informational message.
         Otherwise, starts the server in daemon mode.
         """
+        if not self.check_frida_server_installed():
+            self.install_frida_server()
+        if self.get_frida_server_version() != frida.__version__:
+            self.install_frida_server()
         if force_stop:
             self.stop_frida_server()
-        if self._check_frida_server_running():
+        if self.check_frida_server_running():
             logger.info("Frida server is already running...")
         else:
             logger.info("Starting Frida server...")
@@ -370,7 +388,7 @@ class AndroidDeviceUsb(AndroidDevice):
     instance for USB communication.
     """
 
-    def __init__(self, device_id: Optional[str] = None):
+    def __init__(self, device_id: Optional[str] = None, adb_host="127.0.0.1", adb_port=5037):
         """Instantiate an AndroidDeviceUsb instance.
 
         Connects to an ADB client and selects the appropriate device.
@@ -382,13 +400,15 @@ class AndroidDeviceUsb(AndroidDevice):
                 exactly one device is connected, it is selected
                 automatically. Raises :exc:`RuntimeError` if no device
                 can be determined.
+            adb_host: Optional ADB host address, defaults to 127.0.0.1.
+            adb_port: Optional ADB port number, defaults to 5037.
 
         Raises:
             RuntimeError: If no device is found and ``device_id`` is not
                 provided, or if more than one device is connected without
                 specifying a ``device_id``.
         """
-        client = AdbClient(host="127.0.0.1", port=5037)
+        client = AdbClient(adb_host, adb_port)
         client.devices()
         if device_id:
             device = client.device(device_id)
@@ -411,15 +431,17 @@ class AndroidDeviceTcp(AndroidDevice):
     configured for TCP/IP communication.
     """
 
-    def __init__(self, host: str, port: int = 5555):
+    def __init__(self, host: str, port: int = 5555, adb_host="127.0.0.1", adb_port=5037):
         """
         Initializes an AndroidDeviceTcp instance.
 
         Args:
             host: The IP address or hostname of the device.
-            port: The TCP port for ADB connection. Defaults to 5555.
+            port: The TCP port for ADB connection, defaults to 5555.
+            adb_host: Optional ADB host address, defaults to 127.0.0.1.
+            adb_port: Optional ADB port number, defaults to 5037.
         """
-        client = AdbClient(host="127.0.0.1", port=5037)
+        client = AdbClient(adb_host, adb_port)
         client.remote_connect(host, port)
         device = client.device(f"{host}:{port}")
         super().__init__(device)

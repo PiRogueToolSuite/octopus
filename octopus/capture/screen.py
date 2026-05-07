@@ -97,9 +97,10 @@ class ScreenCapture(AbstractCapture):
         """
         logger.info("Starting screen recording...")
         self.start_capture_time = time.time() * 1000
-        capture_cmd = f"screenrecord --bugreport --size 1280x720 --bit-rate 2000000 {self.path_on_device}"
+        capture_cmd = f"/system/bin/screenrecord --bugreport --size 1280x720 --bit-rate 2000000 {self.path_on_device}"
+        logger.debug(capture_cmd)
         try:
-            self.device.adb_shell_no_wait(capture_cmd)
+            self.device.adb_shell_nohup(capture_cmd)
         except Exception as e:
             self.stop_capture()
             logger.error(e)
@@ -122,7 +123,7 @@ class ScreenCapture(AbstractCapture):
             self.device.adb_shell("pkill -SIGINT screenrecord")
         except Exception as e:
             logger.error(e)
-        time.sleep(2)
+        time.sleep(4)
         try:
             logger.info("Retrieving the screencast from the device...")
             self.device.adb_shell(f"chmod 604 {self.path_on_device}")

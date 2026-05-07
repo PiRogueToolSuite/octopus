@@ -5,6 +5,7 @@
 
 import json
 import logging
+import time
 from importlib import resources
 from pathlib import Path
 from typing import List, Any
@@ -66,6 +67,8 @@ class FridaCapture(AbstractCapture):
         self.captured_data = {}
         self.agent_script = ""
         self.frida_instrumentation = FridaGatedInstrumentation(self.device.get_frida_device(), self)
+        self.start_capture_time: float = 0
+        self.end_capture_time: float = 0
 
     def get_dynamic_hooks_definitions(self):
         """Loads all dynamic hook definitions from JSON files.
@@ -84,7 +87,10 @@ class FridaCapture(AbstractCapture):
             return hook_definitions, False
         for hook_file in hook_files:
             with hook_file.open("r") as file:
-                hook_definitions.extend(json.load(file))
+                try:
+                    hook_definitions.extend(json.load(file))
+                except json.decoder.JSONDecodeError:
+                    pass
         return hook_definitions, True
 
     def get_agent_script(
@@ -132,7 +138,7 @@ class FridaCapture(AbstractCapture):
                 self.agent_script += js.read()
 
         # Write the script to a file for debugging
-        if self.debug or True:
+        if self.debug:
             agent_script_path = Path("/tmp/octopus_agent.js")
             logger.debug(f"Writing agent script to {agent_script_path} for debugging")
             with agent_script_path.open(mode="w") as f:
@@ -152,9 +158,9 @@ class FridaCapture(AbstractCapture):
                 contain keys such as ``contentType``, ``dump``,
                 ``type``, and ``data``.
         """
-        logger.debug("Capturing data")
+        logger.debug("-- Capturing data")
         logger.debug(data)
-        logger.debug("Capturing data")
+        logger.debug("--")
 
         # Log console messages emitted by the Frida agent
         message = None
@@ -180,9 +186,7 @@ class FridaCapture(AbstractCapture):
 
         Iterates over ``self.output_files`` and serializes each collection
         of records. JSON records are pretty-printed; other records are
-        written one per line using their ``data`` field. An
-        ``experiment.json`` summary file is also written to the output
-        directory.
+        written one per line using their ``data`` field.
         """
         logger.info("Saving the data captured by Frida")
         for filename, elt in self.output_files.items():
@@ -200,10 +204,6 @@ class FridaCapture(AbstractCapture):
                         data = record.get("data")
                         out.write(f"{data}\n")
 
-        # Save the details of the experiment
-        with open(f"{self.output_dir}/experiment.json", mode="w") as out:
-            json.dump(self.captured_data, out, indent=2)
-
     def start_capture(self):
         """Starts the Frida capture session on the device.
 
@@ -211,9 +211,13 @@ class FridaCapture(AbstractCapture):
         Frida can attach correctly, starts the Frida server on the device,
         and begins instrumentation.
         """
+        logger.info("Starting the instrumentation...")
+        self.start_capture_time = time.time() * 1000
+
         # Prevent Zygote from pre-forking, Android >= 10 (API 29)
         if int(self.device.get_property("ro.build.version.sdk").strip()) >= 29:
             self.device.adb_shell("setprop persist.device_config.runtime_native.usap_pool_enabled false")
+
         self.device.start_frida_server(force_stop=False)
         self.frida_instrumentation.start()
 
@@ -223,18 +227,20 @@ class FridaCapture(AbstractCapture):
         Stops the instrumentation, shuts down the Frida server on the
         device, and flushes all captured data to disk with :meth:`save_data_files`.
         """
+        logger.info("Stopping the instrumentation...")
+        self.end_capture_time = time.time() * 1000
         self.frida_instrumentation.stop()
         self.device.stop_frida_server()
         self.save_data_files()
 
     def get_result(self) -> dict:
-        """Not applicable for Frida captures.
-
-        Raises:
-            Exception: Always raised as this method is not applicable
-                for this capture type.
         """
-        raise Exception("Not applicable")
+        Retrieve the result of the capture.
+
+        Returns:
+            dict: The result data from the capture.
+        """
+        return self.captured_data
 
     def get_output_file(self) -> Path:
         """Not applicable for Frida captures.

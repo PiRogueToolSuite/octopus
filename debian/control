@@ -18,6 +18,7 @@ Package: pirogue-octopus
 Architecture: all
 Depends:
  frida,
+ python3-click,
  python3-requests,
  python3-usb1,
  python3-ppad,

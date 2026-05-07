@@ -83,7 +83,4 @@ class DevicePropertiesCapture(AbstractCapture):
         self.end_capture_time = time.time() * 1000
 
     def stop_capture(self):
-        """
-        Does nothing
-        """
         pass
