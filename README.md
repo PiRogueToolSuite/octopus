@@ -140,4 +140,4 @@ Frida agent development:
 * `debian/`: Debian packaging configuration.
 
 ## License
-This project is licensed under the **GPL-3.0-or-later**. See the [LICENSES](LICENSES) directory for details.
+This project is licensed under the **GPL-3.0-or-later**. See the LICENSES directory for details.

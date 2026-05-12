@@ -6,7 +6,7 @@ TLS decryption
 .. _SSLKEYLOGFILE: https://tlswg.org/sslkeylogfile/draft-ietf-tls-keylogfile.html
 .. _Wireshark: https://www.wireshark.org/
 .. _friTap: https://github.com/fkie-cad/friTap
-.. _supported SSL/TLS implementations: https://github.com/fkie-cad/friTap#supported-ssltls-implementations-and-corresponding-logging-capabilities
+.. _supported SSL/TLS implementations: https://github.com/fkie-cad/friTap
 .. _pcapng-utils: https://pts-project.org/pcapng-utils/
 
 
