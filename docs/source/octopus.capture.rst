@@ -8,4 +8,5 @@ octopus.capture
    octopus.capture.frida
    octopus.capture.network
    octopus.capture.screen
+   octopus.capture.manager
 

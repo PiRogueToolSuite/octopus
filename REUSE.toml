@@ -12,7 +12,7 @@ SPDX-FileCopyrightText = "2026 Defensive Lab Agency"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 [[annotations]]
-path = ["docs/**/*.rst", "docs/**/*.png"]
+path = ["docs/**/*.webp", "docs/**/*.rst", "docs/**/*.png"]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 Defensive Lab Agency"
 SPDX-License-Identifier = "GPL-3.0-or-later"
