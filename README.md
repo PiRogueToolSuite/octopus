@@ -27,19 +27,21 @@ Octopus is a dynamic analysis framework for Android applications, part of the
 [PiRogue Tool Suite](https://pts-project.org). It instruments Android app behavior
 using [Frida](https://frida.re) and provides the following capabilities:
 
-* Screen recording
-* Full network capture (on device)
-* TLS interception with [friTap](https://github.com/fkie-cad/friTap)
-* Socket operations tracing
-* Cryptographic operations logging
+* **Screen recording**: Capture the device screen during analysis.
+* **Full network capture**: On-device network capture using `tcpdump`.
+* **TLS interception**: Decrypt TLS traffic with [friTap](https://github.com/fkie-cad/friTap).
+* **Socket tracing**: Log all socket operations (connect, read, write).
+* **Cryptographic logging**: Capture cryptographic keys and operations.
+* **API Hooking**: Intercept various Android APIs (Advertising IDs, device info, etc.).
 
 Octopus communicates with a running `adb-server`, either locally or remotely.
 The target device can be a physical Android phone or an emulator, accessible
 via USB or TCP.
 
 ## Requirements
-* **Python** 3.11 or newer
-* A **rooted** Android device (emulator, phone, or tablet)
+* **Python** 3.11 or newer.
+* A **rooted** Android device (physical phone, tablet, or emulator).
+* **ADB** installed and accessible on your host.
 
 ## Installation
 ```bash
@@ -70,17 +72,25 @@ Common options for `instrument`:
 * `-ni, --no-instrumentation`: disable Frida instrumentation.
 * `-nn, --no-network-capture`: disable network capture.
 * `--duration`: capture duration in seconds to wait before it's automatically stopped (default: unlimited).
-* `-w, --overwrite`: to overwrite the output files
+* `-w, --overwrite`: to overwrite the output files.
+* `--log-level`: set the logging level (`DEBUG`, `INFO`, `WARNING`, `ERROR`).
+
+Example with more options:
+```bash
+octopus --log-level DEBUG instrument usb --output-path ./my_analysis --duration 60 --overwrite
+```
 
 ### Outputs
-* `ad_ids.txt`: the list of Android Advertising IDs 
-* `device.json`: the list of device properties (*e.g.* IMEI, brand, fingerprint)
-* `dynamic_hook.json`: the output of dynamically injected hooks
-* `experiment.json`: the summary and timings of the capture and instrumentation
-* `screen.mp4`: the screen recording
-* `socket_trace.json`: the trace of every operation on sockets
-* `sslkeylog.txt`: the list of TLS client randoms
-* `traffic.pcap`: the network capture
+All outputs are saved in the directory specified by `-o` (default: `./output`).
+
+* `ad_ids.txt`: List of Android Advertising IDs (AAID) intercepted.
+* `device.json`: Comprehensive device properties (IMEI, brand, fingerprint, Android version, etc.).
+* `dynamic_hook.json`: Data from dynamically injected Frida hooks.
+* `experiment.json`: Summary metadata of the capture session, including timings and component status.
+* `screen.mp4`: Video recording of the device screen.
+* `socket_trace.json`: Detailed trace of all socket operations (TCP/UDP).
+* `sslkeylog.txt`: TLS master secrets in NSS Key Log format (used for decrypting `traffic.pcap` in Wireshark).
+* `traffic.pcap`: Full network traffic capture in PCAP format.
 
 ### Remote ADB server
 The following options let you specify the ADB server to use:
@@ -126,10 +136,12 @@ It is recommended to use [uv](https://github.com/astral-sh/uv) for managing the 
 The project uses `tox` for automation:
 * `tox -e fix`: Format code using Ruff and run pre-commit hooks.
 * `tox -e docs`: Generate HTML documentation.
+* `tox -e servedocs`: Serve documentation with live reload.
 
 Frida agent development:
 * `npm run build`: Compile TypeScript agent to JavaScript.
 * `npm run watch`: Continuously compile agent on changes.
+* `npm run lint`: Run ESLint on the TypeScript source.
 
 ### Project Structure
 * `octopus/`: Core Python package.
