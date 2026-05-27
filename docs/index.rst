@@ -8,6 +8,7 @@
    :hidden:
 
    tls_decryption
+   android_emulator
    outputs
 
 .. toctree::
