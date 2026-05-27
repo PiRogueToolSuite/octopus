@@ -44,13 +44,13 @@ To have a rooted emulator that works easily with Frida and Octopus, it is recomm
 
    .. code-block:: bash
 
-      avdmanager create avd -n octopus-x86_64 -k "system-images;android-33;google_apis;x86_64"
+      avdmanager create avd -n octopus-x86_64 -k "system-images;android-33;google_apis;x86_64" -d pixel_c
 
    For **arm64**:
 
    .. code-block:: bash
 
-      avdmanager create avd -n octopus-arm64 -k "system-images;android-33;google_apis;arm64-v8a"
+      avdmanager create avd -n octopus-arm64 -k "system-images;android-33;google_apis;arm64-v8a" -d pixel_c
 
 3. **Launch the emulator**
 
