@@ -1,4 +1,4 @@
-pirogue-octopus (1.0.1) bookworm; urgency=medium
+pirogue-octopus (1.1.0) bookworm; urgency=medium
 
   * Refactor device initialization and enhance ADB checks
 
