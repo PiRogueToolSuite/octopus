@@ -4,7 +4,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
-import time
 from functools import cached_property
 from importlib import resources
 from pathlib import Path
@@ -36,7 +35,6 @@ class AndroidDevice:
         adb_device: The connected ADB device instance.
     """
 
-    # device_tmp_dir = Path("/sdcard/")
     device_tmp_dir = Path("/data/local/tmp/")
 
     def __init__(self, adb_device: PPDevice):
@@ -47,7 +45,7 @@ class AndroidDevice:
         root the device, checks root status, and verifies Frida server installation.
 
         Args:
-            adb: An instance of :class:`~octopus.android.adb.ADB` for device communication.
+            adb_device: An instance of :class:`~ppadb.device.PPDevice` for device communication.
         """
         self.adb_device = adb_device
         self.is_root = False
@@ -55,9 +53,78 @@ class AndroidDevice:
         self.rooted = False
         self.tcpdump_binaries_dir = resources.files("octopus") / "assets" / "tcpdump_binaries"
         self.tcpdump_path = self.device_tmp_dir / "tcpdump"
-        self.root()
-        self.is_rooted()
+        self.init()
         self.check_frida_server_installed()
+
+    def is_ready(self) -> bool:
+        logger.info("Checking the device configuration")
+        if self.am_i_root():
+            logger.info("The device is rooted")
+            return True
+        if self.check_device_is_debuggable() and not self.am_i_root():
+            self.root()
+            self.is_root = self.am_i_root()
+            logger.info("The device is rooted")
+            return self.is_root
+        if self.check_su_is_available():
+            self.requires_su = True
+            logger.info("The device is not rooted but 'su' is available")
+            return self.requires_su
+        return False
+
+    def init(self):
+        if not self.check_adb_is_available():
+            raise Exception("ADB is not ready, make sure ADB server is running.")
+        if not self.is_ready():
+            raise Exception("The device is not usable because it is not rooted or 'su' command is not available.")
+
+    def check_adb_is_available(self) -> bool:
+        """Checks if the ADB connection to the device is available.
+
+        Attempts to run a simple shell command on the device to verify
+        that ADB communication is functional.
+
+        Returns:
+            True if ADB is available, False if a :exc:`RuntimeError`
+            is raised during the shell command.
+        """
+        try:
+            self.adb_device.shell("whoami")
+        except RuntimeError:
+            return False
+        return True
+
+    def check_device_is_debuggable(self) -> bool:
+        """Checks if the Android device is debuggable.
+
+        Retrieves the ``ro.debuggable`` system property and checks
+        whether it is set to ``1``.
+
+        Returns:
+            True if the device is debuggable, False otherwise.
+        """
+        return "1" in self.get_property("ro.debuggable")
+
+    def check_su_is_available(self) -> bool:
+        """Checks if ``su`` is available on the device.
+
+        Runs a simple command via ``su`` and checks if it succeeds.
+
+        Returns:
+            True if ``su`` is available, False otherwise.
+        """
+        return "1" in self.adb_device.shell('su -c "echo 1"').strip()
+
+    def am_i_root(self) -> bool:
+        """Checks if the current ADB shell user is root.
+
+        Runs the :textmono:`whoami` command via ADB and checks if the
+        output contains ``root``.
+
+        Returns:
+            True if the current user is root, False otherwise.
+        """
+        return "root" in self.adb_device.shell("whoami")
 
     def root(self):
         """
@@ -74,9 +141,11 @@ class AndroidDevice:
             self.adb_device.root()
         except RuntimeError as e:
             if "adbd is already running as root" in str(e):
-                pass
+                return
+            # elif not self.is_rooted():
+            #     raise Exception("Root access is disabled on the device.")
             else:
-                raise e
+                raise e  # ToDo why we fall here even if "su" exists?!
 
     def get_device_properties(self) -> Dict[str, str]:
         """
@@ -158,10 +227,15 @@ class AndroidDevice:
             True if the device is rooted or has :textmono:`su` access, False otherwise.
         """
         # Check user is root
-        self.is_root = "root" in self.adb_device.shell("whoami")
+        try:
+            self.is_root = "root" in self.adb_device.shell("whoami")
+        except RuntimeError():  # ADB is not ready
+            logger.error("ADB is not ready, cannot check if device rooted.")
+            return False
         # Check su
         if not self.is_root:
-            self.requires_su = "inaccessible or not found" not in self.adb_device.shell('su -c "echo 1"')
+            ret = self.adb_device.shell('su -c "echo 1"').strip()
+            self.requires_su = "1" == ret
         self.rooted = self.is_root or self.requires_su
         return self.rooted
 
@@ -326,7 +400,7 @@ class AndroidDevice:
             logger.info("Frida server is already running...")
         else:
             logger.info("Starting Frida server...")
-            self.adb_shell(f"{FridaServer.executable_path} -l 0.0.0.0 --daemonize")
+            self.adb_shell_nohup(f"{FridaServer.executable_path} -l 0.0.0.0 --daemonize")
 
     def stop_frida_server(self):
         """
@@ -372,11 +446,21 @@ class AndroidDevice:
         logger.info(f"frida-server version {target_version} successfully installed.")
 
     def install_tcpdump(self):
-        logger.info(f"Installing tcpdump on device {self.tcpdump_path}...")
+        """
+        Installs the tcpdump binary on the Android device.
+
+        Copies the appropriate tcpdump binary for the device's architecture
+        from the local assets directory to the device's temporary directory
+        and sets the executable permission.
+
+        Logs the progress and outcome of the installation.
+        """
+        logger.info(f"Installing tcpdump on device {self.tcpdump_path}.")
         tcpdump_version = self.get_tcpdump_version()
         tcpdump_binary = self.tcpdump_binaries_dir / tcpdump_version
-        self.adb_device.push(tcpdump_binary, str(self.tcpdump_path))
+        self.adb_device.push(str(tcpdump_binary), str(self.tcpdump_path))
         self.adb_shell(f"chmod +x {self.tcpdump_path}")
+        logger.info("tcpdump successfully installed on the device.")
 
 
 class AndroidDeviceUsb(AndroidDevice):
