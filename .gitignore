@@ -105,3 +105,6 @@ node_modules
 /build
 /*.egg-info
 /trash
+.aider*
+.continue
+output
