@@ -2,13 +2,15 @@
 # SPDX-FileContributor: u039b <git@0x39b.fr>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
-
+import logging
 import signal
 import threading
 import time
 
 from octopus.android.device import AndroidDeviceUsb, AndroidDeviceTcp
 from octopus.capture.manager import CaptureManager
+
+logger = logging.getLogger("octopus")
 
 
 def common(device, output_path, no_screen_record, no_network_capture, no_instrumentation, duration, overwrite):
@@ -87,8 +89,11 @@ def usb_mode(
             runs until a stop signal is received.
         overwrite: If True, allows overwriting existing output files.
     """
-    device = AndroidDeviceUsb(device_id, adb_host, adb_port)
-    common(device, output_path, no_screen_record, no_network_capture, no_instrumentation, duration, overwrite)
+    try:
+        device = AndroidDeviceUsb(device_id, adb_host, adb_port)
+        common(device, output_path, no_screen_record, no_network_capture, no_instrumentation, duration, overwrite)
+    except (Exception,) as e:
+        logger.error(e)
 
 
 def tcp_mode(
@@ -121,5 +126,8 @@ def tcp_mode(
             runs until a stop signal is received.
         overwrite: If True, allows overwriting existing output files.
     """
-    device = AndroidDeviceTcp(device_host, device_port, adb_host, adb_port)
-    common(device, output_path, no_screen_record, no_network_capture, no_instrumentation, duration, overwrite)
+    try:
+        device = AndroidDeviceTcp(device_host, device_port, adb_host, adb_port)
+        common(device, output_path, no_screen_record, no_network_capture, no_instrumentation, duration, overwrite)
+    except (Exception,) as e:
+        logger.error(e)
