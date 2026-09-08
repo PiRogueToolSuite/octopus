@@ -29,7 +29,7 @@ class CaptureManager:
         overwrite: bool,
     ) -> None:
         self.device = device
-        self.output_path = output_path
+        self.output_path = Path(output_path)
         self.no_screen_record = no_screen_record
         self.no_network_capture = no_network_capture
         self.no_instrumentation = no_instrumentation

@@ -219,6 +219,7 @@ class FridaCapture(AbstractCapture):
             self.device.adb_shell("setprop persist.device_config.runtime_native.usap_pool_enabled false")
 
         self.device.start_frida_server(force_stop=False)
+        time.sleep(15)
         self.frida_instrumentation.start()
 
     def stop_capture(self):

@@ -48,26 +48,35 @@ def on_message(
         return
     if message["type"] == "send":
         payload = message.get("payload", {})
-        if payload == "offset_hooking":
-            script.post({"type": "offset_hooking", "payload": None})
-            return
-        if payload == "pattern_hooking":
-            script.post({"type": "pattern_hooking", "payload": None})
-            return
-        if payload == "socket_tracing":
-            script.post({"type": "socket_tracing", "payload": False})
-            return
-        if payload == "defaultFD":
-            script.post({"type": "defaultFD", "payload": False})
-            return
-        if payload == "experimental":
-            script.post({"type": "experimental", "payload": False})
+        logger.debug(payload)
+        if payload == "config_batch":
+            script.post(
+                {
+                    "type": "config_batch",
+                    "payload": {
+                        "offsets": None,
+                        "patterns": None,
+                        "socket_tracing": False,
+                        "defaultFD": False,
+                        "pcap_enabled": False,
+                        "keylog_enabled": True,
+                        "experimental": False,
+                        "protocol_select": "tls",
+                        "install_lsass_hook": False,
+                        "use_modern": False,
+                        "library_scan": None,
+                        "library_scan_enabled": False,
+                        "ohttp_enabled": True,
+                        "quic_capture_mode": "stream",
+                        "quic_only": False,
+                        "quic_egress_headers_layer": "auto",
+                        "debug_output": False,
+                    },
+                }
+            )
             return
         if payload == "anti":
-            script.post({"type": "antiroot", "payload": True})
-            return
-        if payload == "install_lsass_hook":
-            script.post({"type": "install_lsass_hook", "payload": False})
+            script.post({"type": "antiroot", "payload": False})
             return
         # Received data from the Frida hooks
         # Specific handling for friTap data
@@ -75,7 +84,6 @@ def on_message(
             payload["dump"] = "sslkeylog.txt"
             payload["type"] = "sslkeylog"
             payload["data"] = payload.get("keylog")
-        logger.debug(payload)
         capture_manager.capture_data(payload)
 
 

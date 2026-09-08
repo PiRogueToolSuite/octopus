@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import Java from "frida-java-bridge";
-import "./friTap/agent/ssl_log.ts";
+import "./friTap/agent/fritap_agent.ts";
 import {log_ad_ids} from "./pirogue/log_ad_ids.js";
 import {log_aes_info} from "./pirogue/log_aes_info.js";
 import {socket_trace} from "./pirogue/log_socket_operations.js";
