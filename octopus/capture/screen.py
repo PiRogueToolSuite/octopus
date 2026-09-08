@@ -97,7 +97,7 @@ class ScreenCapture(AbstractCapture):
         """
         logger.info("Starting screen recording...")
         self.start_capture_time = time.time() * 1000
-        capture_cmd = f"/system/bin/screenrecord --bugreport --size 1280x720 --bit-rate 2000000 {self.path_on_device}"
+        capture_cmd = f"/system/bin/screenrecord --bugreport --size 1280x720 {self.path_on_device}"
         logger.debug(capture_cmd)
         try:
             self.device.adb_shell_nohup(capture_cmd)
