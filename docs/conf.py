@@ -28,6 +28,7 @@ autodoc_member_order = "groupwise"
 extensions = [
     "colander",
     "myst_parser",
+    "sphinx_tabs.tabs",
     "sphinx.ext.autodoc",
     "sphinx_copybutton",
     "sphinx_rtd_theme",

@@ -69,6 +69,7 @@ docs = [
   "sphinx-hoverxref",
   "sphinx-jsonschema",
   "sphinx-needs",
+  "sphinx-tabs",
   "sphinx-notfound-page",
   "sphinx-rtd-theme",
   "sphinxcontrib-datatemplates",
