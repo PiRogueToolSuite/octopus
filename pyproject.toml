@@ -32,7 +32,7 @@ dependencies = [
   "frida-tools>=14.0.0,<15.0.0",
   "libusb1==2.0.1",
   "pure-python-adb>=0.3.0.dev0",
-  "requests==2.28.1",
+  "requests>=2.28.1",
 ]
 
 [project.scripts]
@@ -77,12 +77,12 @@ docs = [
 
 [tool.hatch]
 build.targets.sdist.ignore-vcs = true
-build.targets.wheel.packages = [ "octopus" ]
 build.targets.sdist.only-include = [
   "octopus",
   "LICENSE",
   "README.md",
 ]
+build.targets.wheel.packages = [ "octopus" ]
 
 # Use hatch_build.py to get the version and authors metadata
 [tool.hatch.metadata.hooks.custom]
