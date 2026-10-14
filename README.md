@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <div align="center">
-<img width="60px" src="https://pts-project.org/android-chrome-512x512.png">
+<img width="80px" src="https://docs.pts-project.org/img/logos/octopus-logo.svg">
 <h1>Octopus</h1>
 <p>
 Dynamic analysis framework for Android apps.
@@ -38,14 +38,38 @@ Octopus communicates with a running `adb-server`, either locally or remotely.
 The target device can be a physical Android phone or an emulator, accessible
 via USB or TCP.
 
+## Supported SSL/TLS implementations
+| Library | Apps Using It |
+|---------|---------------|
+| **BoringSSL/OpenSSL** | Chrome, most Google apps |
+| **Conscrypt** | Android system, many apps |
+| **GnuTLS** | Some native apps |
+| **WolfSSL** | IoT/embedded apps |
+| **mbedTLS** | Embedded/IoT apps |
+| **NSS** | Firefox, Mozilla apps |
+| **Cronet** | Chrome-based networking |
+| **Flutter** | Flutter applications |
+| **S2N-TLS** | AWS SDK apps |
+| **Rustls** | Rust-based apps |
+| **Go TLS** | Go applications |
+| **BouncyCastle/Spongycastle** | Java crypto apps |
+| **Mono BTLS** | Xamarin/.NET apps |
+| **MetaRTC** | WebRTC applications |
+| **Java TLS** | Pure Java apps |
+
+Find more details in [friTap documentation](https://fkie-cad.github.io/friTap/platforms/android/#ssltls-libraries-on-android).
+
 ## Requirements
 * **Python** 3.11 or newer.
 * A **rooted** Android device (physical phone, tablet, or emulator).
 * **ADB** installed and accessible on your host.
 
 ## Installation
+
 ```bash
 pip install pirogue-octopus
+# or
+uv tool install pirogue-octopus
 ```
 
 ## Usage
@@ -61,6 +85,8 @@ octopus instrument usb
 # Start instrumentation over network
 octopus instrument tcp --device-host <DEVICE_IP>
 ```
+
+Use `uv tool run --from pirogue-octopus octopus` when installed with `uv`.
 
 Octopus instruments processes when they spawn. To instrument an application, start `octopus` then launch the application 
 to be analyzed when Octopus is *Waiting for data*. Press `CTRL + C` to stop.
