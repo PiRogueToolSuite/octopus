@@ -9,6 +9,7 @@ Build-Depends:
  python3-all,
  python3-hatchling,
  python3-setuptools,
+ pybuild-plugin-pyproject,
  quilt,
 Standards-Version: 4.5.1
 Homepage: https://github.com/PiRogueToolSuite/octopus
@@ -17,11 +18,12 @@ Rules-Requires-Root: no
 Package: pirogue-octopus
 Architecture: all
 Depends:
+ adb,
  frida,
  python3-click,
  python3-requests,
  python3-usb1,
- python3-ppad,
+ python3-ppadb,
  ${python3:Depends},
  ${misc:Depends},
 Description: Dynamic analysis framework for Android apps.

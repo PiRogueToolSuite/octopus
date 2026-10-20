@@ -211,6 +211,8 @@ class FridaCapture(AbstractCapture):
         Frida can attach correctly, starts the Frida server on the device,
         and begins instrumentation.
         """
+        self.device.ensure_frida_server_installed()
+
         logger.info("Starting the instrumentation...")
         self.start_capture_time = time.time() * 1000
 

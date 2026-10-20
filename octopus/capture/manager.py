@@ -67,6 +67,9 @@ class CaptureManager:
 
         self.output_path.mkdir(parents=True, exist_ok=True)
 
+        self.device.ensure_frida_server_installed()
+        self.device.start_frida_server()
+
         self.ready = True
 
         # Always capture device properties.

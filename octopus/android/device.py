@@ -202,14 +202,14 @@ class AndroidDevice:
             The CPU architecture string, such as 'arm64', 'x86_64', 'arm', or 'x86'.
             Raises a RuntimeError if the architecture cannot be determined.
         """
-        arch = self.system_properties["arch"]
-        if arch == "arm64":
+        arch = self.get_property("ro.product.cpu.abi")
+        if "arm64" in arch:
             return "arm64"
-        elif arch == "arm":
+        elif "arm" in arch:
             return "arm32"
-        elif arch == "ia32":
+        elif "ia32" in arch:
             return "x86"
-        elif arch == "x64":
+        elif "x64" in arch:
             return "x86_64"
         elif "x86" in arch:
             return "x86"
@@ -371,6 +371,7 @@ class AndroidDevice:
         Executes the Frida server binary with the :textmono:`--version` flag.
         """
         output = self.adb_shell(f"{FridaServer.executable_path} --version").strip()
+        logger.debug(f"Frida server version: {output}")
         if not output or "inaccessible or not found" in output:
             version = "unknown"
         else:
@@ -390,10 +391,7 @@ class AndroidDevice:
         If the server is already running, just logs an informational message.
         Otherwise, starts the server in daemon mode.
         """
-        if not self.check_frida_server_installed():
-            self.install_frida_server()
-        if self.get_frida_server_version() != frida.__version__:
-            self.install_frida_server()
+        self.ensure_frida_server_installed()
         if force_stop:
             self.stop_frida_server()
         if self.check_frida_server_running():
@@ -411,6 +409,15 @@ class AndroidDevice:
         logger.info("Stopping Frida server...")
         self.adb_shell(f"pkill -f -l 9 {FridaServer.executable}")
 
+    def ensure_frida_server_installed(self, version: Optional[str] = None):
+        logger.debug("Ensuring Frida server is installed")
+        if not self.check_frida_server_installed():
+            logger.debug("Frida server is not installed...")
+            self.install_frida_server(version)
+        elif self.get_frida_server_version() != frida.__version__:
+            logger.debug(f"Frida server version: {self.get_frida_server_version()} != {frida.__version__}")
+            self.install_frida_server(version)
+
     def install_frida_server(self, version: Optional[str] = None):
         """Installs the Frida server binary on the device.
 
@@ -424,7 +431,8 @@ class AndroidDevice:
                 package version.
         """
         target_version = version or frida.__version__
-        logger.info(f"Installing frida-server {target_version} on device ({FridaServer.executable})...")
+        logger.info(f"Installing frida-server {target_version}-{self.architecture} on device ()...")
+        logger.debug(f"Filename {FridaServer.executable}")
 
         # Stop any running Frida server instance before replacing the binary
         self.stop_frida_server()
@@ -503,6 +511,7 @@ class AndroidDeviceUsb(AndroidDevice):
         super().__init__(device)
 
     def get_frida_device(self) -> Device:
+        logger.debug(f"Getting frida USB device")
         return frida.get_usb_device()
 
 
@@ -533,4 +542,5 @@ class AndroidDeviceTcp(AndroidDevice):
         self.port = port
 
     def get_frida_device(self) -> Device:
+        logger.debug(f"Getting frida TCP device: {self.host}:{self.port}")
         return frida.get_device_manager().add_remote_device(self.host)

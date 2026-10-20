@@ -62,7 +62,7 @@ class OnDeviceNetworkCapture(AbstractCapture):
     def start_capture(self):
         """Starts the on-device network capture.
 
-        Ensures the Frida server is running and tcpdump is installed on the
+        Ensures tcpdump is installed on the
         device, then launches tcpdump via a non-blocking ADB shell command.
         ADB (port 5555) and Frida (port 27042) traffic is excluded from the
         capture to avoid noise. Records the start timestamp.
@@ -71,7 +71,6 @@ class OnDeviceNetworkCapture(AbstractCapture):
             Exception: If the ADB shell command fails to launch, the capture
                 is stopped and the error is logged.
         """
-        self.device.start_frida_server(force_stop=False)
         self.device.install_tcpdump()
         logger.info("Starting on device network capture...")
         self.start_capture_time = time.time() * 1000
