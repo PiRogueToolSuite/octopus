@@ -1,3 +1,9 @@
+pirogue-octopus (1.2.1) trixie; urgency=medium
+
+  *  Refactor Frida server management
+
+ -- U+039b <hello@pts-project.org>  Tue, 20 Oct 2026 06:50:02 +0000
+
 pirogue-octopus (1.2.0) bookworm; urgency=medium
 
   * Update friTap to version 2.3.0.
