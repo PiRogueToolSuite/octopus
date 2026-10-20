@@ -6,7 +6,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
 <div align="center">
-<img width="80px" src="https://docs.pts-project.org/img/logos/octopus-logo.svg">
+<img width="80px" src="https://raw.githubusercontent.com/PiRogueToolSuite/octopus/refs/heads/main/logo.svg">
 <h1>Octopus</h1>
 <p>
 Dynamic analysis framework for Android apps.
